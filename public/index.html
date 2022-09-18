@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Example</title>
+        <script src="jquery.min.js"></script>
+        <script rel="stylesheet" href="bootstrap2/css/bootstrap.min.css"></script>
+        <script src="bootstrap2/js/bootstrap.min.js"></script>
+        <style>
+            body{
+                height:6000px;margin:0 auto;
+            }
+            .alldiv{
+                position:relative;
+                display: flex;
+                flex-flow: row wrap;
+            }
+
+            .container{
+                width:600px;margin:0 auto;position:relative;
+            }
+            .container .row{
+                height:30px;line-height:30px;
+            }
+
+
+            
+        </style>
+    </head>
+    <body>
+       
+        <div class="container" id="li2">
+            <div class="row">
+                <div class="col-md-12"> 
+            <h2>Wallent</h2>
+                </div> 
+           </div>
+        </div>
+    
+    <div class="alldiv">
+
+        <div class="container" id="li0">
+            <div class="container" id="li2">
+                <div class="row">
+                    <div class="col-md-12"> 
+                <h4>Create account</h4>
+                    </div> 
+               </div>
+            <div class="row">
+                <div class="col-md-12"> 
+                     <input type="text" class="form-control" placeholder="Text input" style="width:100%" id="inputpwd">
+                </div> 
+            </div>
+            <div class="row">
+                <div class="col-md-12"> 
+                    <button class="btn btn-primary" style="width:100%" id="addbtn">Add account</button>
+                </div> 
+            </div>
+        </div>
+
+        <!--- all accounts---->
+        <div class="container" id="li2">
+            <div class="row">
+                <div class="col-md-12"> 
+            <h4>Current accounts</h4>
+                </div> 
+           </div>
+        </div>
+    
+        <div class="container" id="list">
+        </div>
+
+
+        <!--- transfer---->
+       
+        <div class="container" id="li1">
+           
+                <div class="row">
+                    <div class="col-md-12"> 
+                <h4>Transfer </h4>
+                    </div> 
+               </div>
+                <div class="row">
+                <div class="col-md-12"> 
+                   <input type="text" class="form-control" placeholder=" From:" style="width:100%" id="from1">
+                </div> 
+            </div>
+            <div class="row">
+                <div class="col-md-12"> 
+                <input type="text" class="form-control" placeholder="  To:  " style="width:100%" id="to1">
+               </div> 
+            </div>
+            <div class="row">
+               <div class="col-md-12"> 
+                  <input type="text" class="form-control" placeholder="Amount:   " style="width:100%" id="amount1">
+               </div> 
+            </div>
+            <div class="row">
+               <div class="col-md-12"> 
+                   <input type="text" class="form-control" placeholder=" Password: " style="width:100%" id="password1">
+                </div> 
+            </div>
+            <div class="row">
+                <div class="col-md-12"> 
+                    <button class="btn btn-primary" style="width:100%" id="transfer">Confirm transfer</button>
+                </div> 
+            </div>
+            <div class="row">
+                <div class="col-md-12"> 
+            <h4><span id="showhash"></span></h4>
+                </div> 
+           </div>
+           
+        </div>
+
+        <!--- balance---->
+       
+      <div class="container" id="li2">
+        <div class="row">
+            <div class="col-md-12"> 
+        <h4>Balance   <span id="showbalance"></span></h4>
+            </div> 
+       </div>
+         <div class="row">
+            <div class="col-md-12"> 
+                <input type="text" class="form-control" placeholder="Balance: " style="width:100%" id="balance">
+            </div> 
+        </div>
+        <div class="row">
+            <div class="col-md-12"> 
+                <button class="btn btn-primary" style="width:100%" id="balancebtn">Check balance</button>
+            </div> 
+        </div>
+      </div>
+</div>
+        <script>
+          //  fetch('http://10.93.6.166:5000/accounts')
+   // fetch('http://10.93.6.166:5000/accounts', {
+ // method: 'GET', // or 'PUT'
+ // headers: {
+ //'Content-Type': 'application/json',
+ //},
+ //body: JSON.stringify(response),
+//})
+//.then(data => {
+ // console.log('Success:', data);
+//})
+//.catch((error) => {
+ // console.error('Error:', error);
+//});
+
+function getAccounts(){
+    $.get('http://10.93.6.166:5000/accounts',function(accounts) {
+    console.log('Success av receive account',accounts);
+           var rows="";
+           for(var i=0;i<accounts.length;i++){
+           rows += `<div class="row">
+            <div class="col-md-12"> 
+                ${accounts[i]}
+                </div> 
+                </div>`
+            }
+            $("#list").html(rows);
+})
+}
+
+getAccounts();
+
+$("#addbtn").click(function(){
+       var inputpwd=$("#inputpwd").val();
+       if(inputpwd !=""){
+        $.get('http://10.93.6.166:5000/addaccounts',{inputpwd:inputpwd},function(res){
+            getAccounts();
+        })
+       }
+       $("#inputpwd").val("");
+})
+
+$("#transfer").click(function(){
+    var from1=$("#from1").val();
+    var to1=$("#to1").val();
+    var amount1=$("#amount1").val();
+    var password1=$("#password1").val();
+    if(from1 !="" && to1 !=""&& amount1 !=""&& password1 !=""){
+        $.get('http://10.93.6.166:5000/transfer',{from1, to1, amount1,password1},function(res){
+            console.log('Success av transfer:',res);
+            $("#showhash").html(res)
+        })
+       }
+})
+
+//<!--- balance---->
+$("#balancebtn").click(function(){
+    var balance=$("#balance").val();
+
+    if(balance !=""){
+        $.get('http://10.93.6.166:5000/balance',{balance},function(balanceEth){
+            console.log('Success av balance',balanceEth);
+            $("#showbalance").html(balanceEth)
+        })
+       }
+})
+
+        </script>
+    </body>
+</html>
